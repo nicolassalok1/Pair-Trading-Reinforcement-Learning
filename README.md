@@ -116,7 +116,9 @@ Si tu veux relancer plus tard dans une nouvelle console :
 
 Ouvre PowerShell, configure CUDA 11.2 pour la session :
 
+deactivate  # si besoin
 $env:CUDA_PATH="C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v11.2"
 $env:PATH="$env:CUDA_PATH\bin;$env:CUDA_PATH\libnvvp;$env:PATH"
 conda activate rlpair-gpu-py310
 ./test-app-gpu.ps1 -SkipInstall -UseCurrentEnv -PythonExe "python"
+

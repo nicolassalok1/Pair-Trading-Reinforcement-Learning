@@ -5,8 +5,8 @@ from pathlib import Path
 
 try:
     import torch
-except ImportError:
-    pytest.skip("torch not installed; skipping Heston tests.", allow_module_level=True)
+except (ImportError, OSError):
+    pytest.skip("torch unavailable or failed to load; skipping Heston tests.", allow_module_level=True)
 
 heston_module = pytest.importorskip("heston_model.calibrate_heston")
 HestonParams = getattr(heston_module, "HestonParams", None)

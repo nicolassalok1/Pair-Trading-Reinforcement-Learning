@@ -1,0 +1,19 @@
+enabled: true
+csv_path: heston_dummy_calls.csv
+window_size: 50
+maturities:
+  - 0.25
+  - 0.5
+  - 1.0
+strikes:
+  - 0.8
+  - 1.0
+  - 1.2
+normalization: minmax
+pricer:
+  max_iters: 5
+  lr: 0.05
+  r: 0.02
+  q: 0.0
+  device: cpu
+output_csv: STATICS/Heston/features.csv

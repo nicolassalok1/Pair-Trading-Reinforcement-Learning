@@ -1,4 +1,10 @@
-telegram_api_token: "YOUR_TOKEN"
-telegram_channel_id: "YOUR_CHANNEL"
-gpt_model: "gpt-5.1"
-gpt_api_key: "OPENAI_KEY"
+enabled: true
+openai_api_key: ""
+openai_model: gpt-4o
+telegram_api_token: ""
+telegram_channel_id: ""
+sentiment_threshold: 0.25
+normalize_features: true
+mock_gpt: true
+mock_telegram: true
+output_csv: STATICS/NLP/sentiment_features.csv

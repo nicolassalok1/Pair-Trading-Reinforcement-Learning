@@ -1,0 +1,10 @@
+learning_rate: 0.001
+batch_size: 32
+gamma: 0.99
+episodes: 3
+exploration_rate: 0.1
+policy: epsilon_greedy
+device: cpu
+use_heston: true
+use_nlp: true
+dry_run: false

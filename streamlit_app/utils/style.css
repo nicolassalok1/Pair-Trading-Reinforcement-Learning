@@ -1,0 +1,30 @@
+:root {
+  --primary: #0b4f6c;
+  --accent: #ffa630;
+  --bg: #f5f7fb;
+  --muted: #55606e;
+}
+
+body {
+  background-color: var(--bg);
+}
+
+.main-title {
+  color: var(--primary);
+}
+
+.log-box {
+  background: #0f1116;
+  color: #e5e7eb;
+  padding: 0.75rem;
+  border-radius: 6px;
+  font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+  font-size: 13px;
+  max-height: 420px;
+  overflow-y: auto;
+}
+
+.log-error {
+  color: #ff6b6b;
+  font-weight: 600;
+}

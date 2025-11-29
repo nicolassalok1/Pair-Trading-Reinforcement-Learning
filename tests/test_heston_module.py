@@ -1,8 +1,12 @@
 import numpy as np
 import pandas as pd
 import pytest
-import torch
 from pathlib import Path
+
+try:
+    import torch
+except ImportError:
+    pytest.skip("torch not installed; skipping Heston tests.", allow_module_level=True)
 
 heston_mod = pytest.importorskip("heston_model.calibrate_heston")
 HestonParams = getattr(heston_mod, "HestonParams", None)

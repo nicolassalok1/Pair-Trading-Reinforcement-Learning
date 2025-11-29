@@ -15,3 +15,4 @@ See the folder EXAMPLE for more detail. Please initiate your own virtual environ
 
 ## Disclaimer
 The article and the relevant codes and content are purely informative and none of the information provided constitutes any recommendation regarding any security, transaction or investment strategy for any specific person. The implementation described in the article could be risky and the market condition could be volatile and differ from the period covered above. All trading strategies and tools are implemented at the users’ own risk.
+conda create --name GPURLPAir --clone lgbm-gpu-clone

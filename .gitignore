@@ -1,0 +1,48 @@
+# Byte-compiled / cache
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.pytest_cache/
+
+# Conda / venvs
+.conda/
+.venv/
+env/
+venv/
+
+# Jupyter
+.ipynb_checkpoints/
+
+# VS Code / IDE
+.vscode/
+*.code-workspace
+.idea/
+
+# OS cruft
+Thumbs.db
+.DS_Store
+
+# Logs / temp
+*.log
+*.tmp
+*.bak
+
+# Data/output (adjust if you need to keep specific files)
+data/
+*.csv
+*.tsv
+*.parquet
+*.feather
+*.h5
+
+# Generated plots
+*.png
+*.jpg
+*.jpeg
+*.svg
+
+# Python packaging
+dist/
+build/
+*.egg-info/

@@ -1,0 +1,11 @@
+pandas
+numpy
+scipy
+scikit-learn
+matplotlib
+tensorflow-gpu
+aiohttp
+statsmodels
+PyYAML
+seaborn
+fastcluster

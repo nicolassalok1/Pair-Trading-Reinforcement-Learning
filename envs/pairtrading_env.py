@@ -7,6 +7,7 @@ Only input shape/state concatenation is managed here; reward/policy logic is unc
 from __future__ import annotations
 
 import logging
+from pathlib import Path
 from typing import Optional
 
 import gym
@@ -15,6 +16,7 @@ from gym import spaces
 
 from nlp_module.sentiment_processor import get_sentiment_features
 from utils.config_loader import load_nlp_config
+from heston_model.calibrate_heston import get_heston_features_from_csv
 
 logger = logging.getLogger(__name__)
 
@@ -33,14 +35,29 @@ class PairTradingEnv(gym.Env):
         market_feature_dim: int,
         action_space_n: int = 2,
         heston_feature_dim: int = 0,
+        heston_csv_path: Optional[Path] = None,
+        heston_rate: float = 0.02,
+        heston_dividend: float = 0.0,
         use_sentiment: bool = True,
         nlp_config_path: Optional[str] = None,
     ):
         super().__init__()
         self.market_feature_dim = int(market_feature_dim)
-        self.heston_feature_dim = int(heston_feature_dim)
+        self.heston_feature_dim = int(heston_feature_dim) if heston_feature_dim else (5 if heston_csv_path else 0)
         self.sentiment_dim = 4 if use_sentiment else 0
         self.use_sentiment = use_sentiment
+        self._heston_features = None
+        if heston_csv_path:
+            try:
+                features, self._heston_metrics = get_heston_features_from_csv(
+                    csv_path=Path(heston_csv_path),
+                    r=heston_rate,
+                    q=heston_dividend,
+                )
+                self._heston_features = features.astype(np.float32)
+            except Exception as exc:  # pragma: no cover - runtime safety
+                logger.warning("Heston feature extraction failed: %s", exc)
+                self._heston_features = np.zeros(self.heston_feature_dim, dtype=np.float32)
 
         self.action_space = spaces.Discrete(action_space_n)
         obs_dim = self.market_feature_dim + self.heston_feature_dim + self.sentiment_dim
@@ -67,11 +84,21 @@ class PairTradingEnv(gym.Env):
             logger.warning("Sentiment fetch failed: %s", exc)
             return np.zeros(4, dtype=np.float32)
 
+    def _get_heston_features(self) -> np.ndarray:
+        if self.heston_feature_dim == 0:
+            return np.zeros(0, dtype=np.float32)
+        if self._heston_features is None:
+            return np.zeros(self.heston_feature_dim, dtype=np.float32)
+        return np.asarray(self._heston_features, dtype=np.float32).flatten()
+
     def build_state(self, market_features: np.ndarray, heston_features: Optional[np.ndarray] = None) -> np.ndarray:
         market_features = np.asarray(market_features, dtype=np.float32).flatten()
-        heston_features = np.asarray(heston_features, dtype=np.float32).flatten() if heston_features is not None else np.zeros(self.heston_feature_dim, dtype=np.float32)
+        if heston_features is not None:
+            heston_vec = np.asarray(heston_features, dtype=np.float32).flatten()
+        else:
+            heston_vec = self._get_heston_features()
         sentiment_features = self._fetch_sentiment() if self.use_sentiment else np.zeros(0, dtype=np.float32)
-        return np.concatenate([market_features, heston_features, sentiment_features]).astype(np.float32)
+        return np.concatenate([market_features, heston_vec, sentiment_features]).astype(np.float32)
 
     def reset(self, **kwargs):
         # Placeholder reset; actual logic should populate market/heston features externally.

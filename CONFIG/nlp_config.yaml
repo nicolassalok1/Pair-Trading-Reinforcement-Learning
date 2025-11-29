@@ -1,0 +1,4 @@
+telegram_api_token: "YOUR_TOKEN"
+telegram_channel_id: "YOUR_CHANNEL"
+gpt_model: "gpt-5.1"
+gpt_api_key: "OPENAI_KEY"

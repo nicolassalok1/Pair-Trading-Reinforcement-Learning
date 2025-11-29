@@ -16,13 +16,56 @@ tf.disable_v2_behavior()
 repo_root   = Path(__file__).resolve().parent.parent
 config_path = repo_root / "CONFIG" / "config_train.yml"
 price_dir   = repo_root / "STATICS" / "PRICE"
+ticker_x    = "BTC"
+ticker_y    = "USD"
+
+
+def _ensure_price_pair(path_a: Path, path_b: Path, base_a: float, base_b: float,
+                       vol_a: float, vol_b: float, corr: float, n_obs: int = 8000):
+    """
+    If either price file is missing, generate a correlated pair so the example can run end-to-end.
+    """
+    if path_a.exists() and path_b.exists():
+        return path_a, path_b
+
+    rng = np.random.default_rng(seed=123)
+    cov = np.array([[1.0, corr], [corr, 1.0]])
+    L = np.linalg.cholesky(cov)
+    shocks = rng.standard_normal(size=(n_obs, 2)) @ L.T
+
+    dt = 1 / 1440  # minute-ish step for illustration
+    mu = 0.02
+    ret_a = np.exp((mu - 0.5 * vol_a ** 2) * dt + vol_a * shocks[:, 0] * np.sqrt(dt))
+    ret_b = np.exp((mu - 0.5 * vol_b ** 2) * dt + vol_b * shocks[:, 1] * np.sqrt(dt))
+    prices_a = base_a * np.cumprod(ret_a)
+    prices_b = base_b * np.cumprod(ret_b)
+
+    dates = pd.date_range("2020-01-01", periods=n_obs, freq="T")
+    df_a = pd.DataFrame({"date": dates.strftime("%Y-%m-%d %H:%M:%S"), "close": prices_a})
+    df_b = pd.DataFrame({"date": dates.strftime("%Y-%m-%d %H:%M:%S"), "close": prices_b})
+
+    path_a.parent.mkdir(parents=True, exist_ok=True)
+    df_a.to_csv(path_a, index=False)
+    df_b.to_csv(path_b, index=False)
+    print(f"[Info] Created synthetic price files:\n  {path_a}\n  {path_b}")
+    return path_a, path_b
 
 # Read config
 config_train = FileIO.read_yaml(str(config_path))
 
+# Ensure data is available; synthesize if missing to keep the example runnable
+path_x, path_y = _ensure_price_pair(
+    price_dir / f"{ticker_x}.csv",
+    price_dir / f"{ticker_y}.csv",
+    base_a=30000, base_b=1.3,
+    vol_a=0.6, vol_b=0.25,
+    corr=0.7,
+    n_obs=8000,
+)
+
 # Read prices
-x = pd.read_csv(price_dir / "JNJ.csv")
-y = pd.read_csv(price_dir / "PG.csv")
+x = pd.read_csv(path_x)
+y = pd.read_csv(path_y)
 x, y = EGCointegration.clean_data(x, y, 'date', 'close')
 
 # Separate training and testing sets

@@ -123,9 +123,50 @@ class Tiingo(object):
         return data
 
     @staticmethod
-    def format_data(data, attr, n_obs):
-        n_obs = int(n_obs)
-        data  = data[attr]
-        if len(data) > n_obs:
-            data = data.iloc[:n_obs]
-        return data
+def format_data(data, attr, n_obs):
+    n_obs = int(n_obs)
+    data  = data[attr]
+    if len(data) > n_obs:
+        data = data.iloc[:n_obs]
+    return data
+
+
+# --------------------------------------------------------------------------- #
+# Extended fetchers (Yahoo Finance) for historical prices and option chains
+# --------------------------------------------------------------------------- #
+
+
+class YahooFinance(object):
+    """
+    Lightweight wrapper around yfinance for spot and option chain retrieval.
+    This keeps dependency optional and avoids changing the global requirements.
+    """
+
+    def __init__(self, symbol: str):
+        try:
+            import yfinance as yf
+        except ImportError as exc:
+            raise ImportError("yfinance is required for Yahoo Finance fetcher. "
+                              "Install with `pip install yfinance`.") from exc
+        self.symbol = symbol
+        self._ticker = yf.Ticker(symbol)
+
+    def get_last_close(self) -> float:
+        hist = self._ticker.history(period="2d")
+        hist = hist["Close"].dropna()
+        if hist.empty:
+            raise ValueError(f"No closing prices available for {self.symbol}")
+        return float(hist.iloc[-1])
+
+    def list_expirations(self):
+        return list(self._ticker.options or [])
+
+    def get_option_chain(self, expiration: str):
+        chain = self._ticker.option_chain(expiration)
+        calls = chain.calls.copy()
+        calls["option_type"] = "call"
+        calls["expiration"] = expiration
+        puts = chain.puts.copy()
+        puts["option_type"] = "put"
+        puts["expiration"] = expiration
+        return calls, puts

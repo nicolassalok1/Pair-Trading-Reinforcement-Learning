@@ -20,8 +20,11 @@ dependencies:
       - torchvision==0.18.1+cu121
       - torchaudio==2.3.1+cu121
       # RL stack
+      - gym==0.26.2
       - gymnasium[classic-control]
       - stable-baselines3
       - tensorboard
       - pygame
       - cloudpickle
+      - pyyaml
+      - pytest

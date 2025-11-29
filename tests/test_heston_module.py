@@ -4,11 +4,13 @@ import pandas as pd
 import pytest
 from pathlib import Path
 
-# Avoid hard crashes when torch DLLs are broken: only run if explicitly forced.
-# To run, set RUN_TORCH_TESTS_FORCE=1 in the environment.
-if os.environ.get("RUN_TORCH_TESTS_FORCE", "").lower() not in {"1", "true", "yes"}:
+# Avoid hard crashes when torch DLLs are broken: only run if explicitly forced
+# with a very explicit value to prevent accidental crashes. Log the reason.
+force_flag = os.environ.get("RUN_TORCH_TESTS_FORCE", "").lower()
+if force_flag != "force_import":
     pytest.skip(
-        "Skipping torch-dependent Heston tests (set RUN_TORCH_TESTS_FORCE=1 to attempt).",
+        f"Skipping torch-dependent Heston tests: RUN_TORCH_TESTS_FORCE={force_flag!r} "
+        "(set RUN_TORCH_TESTS_FORCE=force_import to attempt at your own risk).",
         allow_module_level=True,
     )
 

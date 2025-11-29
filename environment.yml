@@ -1,0 +1,27 @@
+name: rl-pytorch-cuda
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+  - python=3.10
+  - pip
+  - numpy<2
+  - pandas
+  - scipy
+  - scikit-learn
+  - matplotlib
+  - tqdm
+  - gymnasium
+  - ipykernel
+  - pip:
+      # PyTorch CUDA 12.1 wheels (no separate CUDA toolkit install needed)
+      - --extra-index-url https://download.pytorch.org/whl/cu121
+      - torch==2.3.1+cu121
+      - torchvision==0.18.1+cu121
+      - torchaudio==2.3.1+cu121
+      # RL stack
+      - gymnasium[classic-control]
+      - stable-baselines3
+      - tensorboard
+      - pygame
+      - cloudpickle

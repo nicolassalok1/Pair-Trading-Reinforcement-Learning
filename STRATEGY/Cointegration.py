@@ -70,7 +70,11 @@ class EGCointegration(Strategy):
 
     @staticmethod
     def get_p_value(x, y):
-        _, p_val, _ = coint(x, y)
+        try:
+            _, p_val, _ = coint(x, y)
+        except ValueError:
+            # statsmodels raises on constant input; treat as non-cointegrated
+            p_val = 1
         return p_val
 
     def run_ols(self, x, y):

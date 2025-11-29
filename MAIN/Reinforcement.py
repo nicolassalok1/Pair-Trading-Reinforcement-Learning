@@ -1,6 +1,8 @@
-import tensorflow as tf
+import tensorflow.compat.v1 as tf
 import PROCESSOR.MachineLearning as ML
 from MAIN.Basics import Agent
+
+tf.disable_v2_behavior()
 
 
 class ContextualBandit(Agent):
@@ -19,7 +21,7 @@ class ContextualBandit(Agent):
         self.output    = tf.reshape(self.output_layer, [-1])
         self.prob_dist = tf.nn.softmax(self.output / self.temp)
         self.weight    = tf.slice(self.output, self.action_holder, [1])
-        self.loss      = -(tf.log(self.weight) * self.reward_holder)
+        self.loss      = -(tf.math.log(self.weight) * self.reward_holder)
         self.optimizer = tf.train.AdamOptimizer(learning_rate=self.config['AgentLearningRate'])
         self.update    = self.optimizer.minimize(self.loss)
 

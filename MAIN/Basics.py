@@ -1,9 +1,11 @@
-import tensorflow as tf
+import tensorflow.compat.v1 as tf
 import itertools
 import random
 import numpy as np
 import abc
 from os import path
+
+tf.disable_v2_behavior()
 
 
 class Agent(metaclass=abc.ABCMeta):
@@ -148,23 +150,48 @@ class TFLayer(object):
 
     @staticmethod
     def fully_connected():
-        return tf.contrib.layers.fully_connected
+        # Map old tf.contrib.layers.fully_connected args to tf.keras.layers.Dense
+        def layer(**kwargs):
+            inputs       = kwargs.pop('inputs')
+            units        = kwargs.pop('num_outputs')
+            activation   = kwargs.pop('activation_fn', None)
+            kernel_init  = kwargs.pop('weights_initializer', None)
+            bias_init    = kwargs.pop('biases_initializer', None)
+            dense_layer  = tf.keras.layers.Dense(units=units,
+                                                 activation=activation,
+                                                 kernel_initializer=kernel_init,
+                                                 bias_initializer=bias_init,
+                                                 **kwargs)
+            return dense_layer(inputs)
+        return layer
 
     @staticmethod
     def dense():
-        return tf.layers.dense
+        def layer(**kwargs):
+            inputs = kwargs.pop('inputs')
+            dense_layer = tf.keras.layers.Dense(**kwargs)
+            return dense_layer(inputs)
+        return layer
 
     @staticmethod
     def flatten():
-        return tf.layers.flatten
+        def layer(**kwargs):
+            inputs = kwargs.pop('inputs')
+            flatten_layer = tf.keras.layers.Flatten(**kwargs)
+            return flatten_layer(inputs)
+        return layer
 
     @staticmethod
     def dropout():
-        return tf.layers.dropout
+        def layer(**kwargs):
+            inputs = kwargs.pop('inputs')
+            drop_layer = tf.keras.layers.Dropout(**kwargs)
+            return drop_layer(inputs)
+        return layer
 
     @staticmethod
     def softmax():
-        return tf.contrib.layers.softmax
+        return tf.nn.softmax
 
     @staticmethod
     def one_hot():
@@ -196,7 +223,7 @@ class Space(object):
 
         multiplier  = tuple(multiplier)
         space_index = tuple([list(range(n)) for n in n_element])
-        n_comb      = np.product(n_element)
+        n_comb      = np.prod(n_element)
         return n_comb, space_index, multiplier
 
     def get_combinations(self):

@@ -2,20 +2,27 @@ import pandas as pd
 import numpy as np
 import MAIN.Basics as basics
 import MAIN.Reinforcement as RL
-import tensorflow as tf
+import tensorflow.compat.v1 as tf
 import seaborn as sns
 import matplotlib.pyplot as plt
+from pathlib import Path
 from UTIL import FileIO
 from STRATEGY.Cointegration import EGCointegration
 
+tf.disable_v2_behavior()
+
+
+# Paths
+repo_root   = Path(__file__).resolve().parent.parent
+config_path = repo_root / "CONFIG" / "config_train.yml"
+price_dir   = repo_root / "STATICS" / "PRICE"
 
 # Read config
-config_path  = 'CONFIG\config_train.yml'
-config_train = FileIO.read_yaml(config_path)
+config_train = FileIO.read_yaml(str(config_path))
 
 # Read prices
-x = pd.read_csv('STATICS\PRICE\JNJ.csv')
-y = pd.read_csv('STATICS\PRICE\PG.csv')
+x = pd.read_csv(price_dir / "JNJ.csv")
+y = pd.read_csv(price_dir / "PG.csv")
 x, y = EGCointegration.clean_data(x, y, 'date', 'close')
 
 # Separate training and testing sets
@@ -37,7 +44,7 @@ actions   = {'n_hist':    n_hist,
              'trade_th':  trade_th,
              'stop_loss': stop_loss,
              'cl':        cl}
-n_action  = int(np.product([len(actions[key]) for key in actions.keys()]))
+n_action  = int(np.prod([len(actions[key]) for key in actions.keys()]))
 
 # Create state space
 transaction_cost = [0.001]

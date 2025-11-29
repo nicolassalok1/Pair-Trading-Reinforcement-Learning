@@ -1,6 +1,7 @@
 Param(
     [string]$PythonExe = "python",
-    [switch]$SkipInstall
+    [switch]$SkipInstall,
+    [switch]$UseCurrentEnv
 )
 
 $ErrorActionPreference = "Stop"
@@ -11,16 +12,20 @@ Set-Location $repoRoot
 Write-Host "Repository root: $repoRoot"
 Write-Host "Using Python executable: $PythonExe"
 
-# Use a dedicated GPU virtual environment to avoid mixing CPU/GPU wheels
-$venvPath = Join-Path $repoRoot "venv-gpu"
-$activatePath = Join-Path $venvPath "Scripts\Activate.ps1"
-if (-not (Test-Path $activatePath)) {
-    Write-Host "Creating GPU virtual environment at $venvPath"
-    & $PythonExe -m venv $venvPath
-}
+# Use current environment or create/activate the project venv-gpu
+if ($UseCurrentEnv) {
+    Write-Host "Using current environment (aucune activation de venv-gpu)"
+} else {
+    $venvPath = Join-Path $repoRoot "venv-gpu"
+    $activatePath = Join-Path $venvPath "Scripts\Activate.ps1"
+    if (-not (Test-Path $activatePath)) {
+        Write-Host "Creating GPU virtual environment at $venvPath"
+        & $PythonExe -m venv $venvPath
+    }
 
-Write-Host "Activating GPU virtual environment"
-. $activatePath
+    Write-Host "Activating GPU virtual environment"
+    . $activatePath
+}
 
 if (-not $SkipInstall) {
     Write-Host "Installing dependencies from requirements-gpu.txt"

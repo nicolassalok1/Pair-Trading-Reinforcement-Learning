@@ -1,11 +1,12 @@
-pandas
-numpy
-scipy
-scikit-learn
-matplotlib
-tensorflow
-aiohttp
-statsmodels
-PyYAML
-seaborn
-fastcluster
+pandas==1.5.3
+numpy==1.23.5
+scipy==1.10.1
+scikit-learn==1.2.2
+matplotlib==3.7.3
+# TensorFlow 2.10.x est la dernière version Windows avec support GPU (CUDA 11.2).
+tensorflow==2.10.1
+aiohttp==3.9.5
+statsmodels==0.14.2
+PyYAML==6.0.1
+seaborn==0.12.2
+fastcluster==1.2.6

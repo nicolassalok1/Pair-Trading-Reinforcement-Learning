@@ -5,7 +5,7 @@ Param(
 
 $ErrorActionPreference = "Stop"
 
-$testScript = Join-Path $PSScriptRoot "test-app.ps1"
+$testScript = Join-Path $PSScriptRoot "test-app-gpu.ps1"
 if (-not (Test-Path $testScript)) {
     throw "Missing test script: $testScript"
 }

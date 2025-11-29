@@ -37,6 +37,22 @@ if ($env:PYTHONPATH) {
     $env:PYTHONPATH = $repoRoot
 }
 
+# Verify that TensorFlow sees at least one GPU
+Write-Host "Checking GPU visibility (TensorFlow)..."
+& $PythonExe -c @"
+import sys
+import tensorflow as tf
+gpus = tf.config.list_physical_devices('GPU')
+if gpus:
+    print("GPUs visible:", ", ".join([g.name for g in gpus]))
+    sys.exit(0)
+print("No GPU visible to TensorFlow.")
+sys.exit(1)
+"@
+if ($LASTEXITCODE -ne 0) {
+    throw "TensorFlow ne détecte pas de GPU. Vérifie les drivers/CUDA/CUDNN avant de relancer."
+}
+
 $jnjPath = Join-Path $repoRoot "STATICS/PRICE/JNJ.csv"
 $pgPath  = Join-Path $repoRoot "STATICS/PRICE/PG.csv"
 if ((-not (Test-Path $jnjPath)) -or (-not (Test-Path $pgPath))) {
@@ -45,4 +61,3 @@ if ((-not (Test-Path $jnjPath)) -or (-not (Test-Path $pgPath))) {
 
 Write-Host "Running application smoke test (EXAMPLE.RunningScript) with GPU deps ..."
 & $PythonExe -m EXAMPLE.RunningScript
-

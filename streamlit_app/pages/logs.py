@@ -67,6 +67,7 @@ def render() -> None:
             "- **Refresh every (sec)** : cadence de rafraichissement automatique.\n"
             "- **Clear <module> log** : efface le fichier de log du module choisi."
         )
+    st.caption("Utilisez ce panneau pour surveiller NLP/Heston/RL. En cas d'erreur, les lignes en rouge sont mises en avant.")
     tail = st.slider("Tail lines", 50, 2000, 400, step=50)
     auto_refresh = st.checkbox("Auto-refresh", value=True)
     refresh_sec = st.slider("Refresh every (sec)", 2, 15, 4)

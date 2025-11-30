@@ -42,6 +42,7 @@ def render() -> None:
             "- **Pricer parameters** : hyperparametres du solveur (iters, lr, taux r/q, device CPU/CUDA).\n"
             "- **Output CSV path** : destination des features Heston exportees pour la suite."
         )
+    st.caption("Si le CSV est manquant en dry-run, un jeu factice est genere. En real-run, pointez vers votre grille d'options.")
     cfg = load_config("heston")
     pricer_cfg = cfg.get("pricer", {}) or {}
 

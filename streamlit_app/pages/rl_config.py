@@ -28,6 +28,7 @@ def render() -> None:
             "- **Use Heston / Use NLP** : injecte ou non les features des autres modules.\n"
             "- **Dry-run** : saute l'entrainement lourd et renvoie un resultat de test."
         )
+    st.caption("Commencez avec peu d'episodes et un exploration_rate > 0 pour tester. Activez CPU si vous n'avez pas CUDA.")
     cfg = load_config("rl")
 
     with st.form(key="rl_config_form"):

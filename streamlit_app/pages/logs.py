@@ -60,6 +60,13 @@ def render_module_logs(module_name: str, auto_refresh: bool, refresh_sec: int, t
 def render() -> None:
     """Render the logs tab with module selectors."""
     st.subheader("Execution logs")
+    with st.expander("Guide des champs (Logs)", expanded=False):
+        st.markdown(
+            "- **Tail lines** : nombre de lignes de log affichees pour chaque module.\n"
+            "- **Auto-refresh** : si coche, la page se relance toutes les X secondes.\n"
+            "- **Refresh every (sec)** : cadence de rafraichissement automatique.\n"
+            "- **Clear <module> log** : efface le fichier de log du module choisi."
+        )
     tail = st.slider("Tail lines", 50, 2000, 400, step=50)
     auto_refresh = st.checkbox("Auto-refresh", value=True)
     refresh_sec = st.slider("Refresh every (sec)", 2, 15, 4)

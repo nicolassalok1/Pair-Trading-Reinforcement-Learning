@@ -273,6 +273,12 @@ def main() -> None:
     load_css()
     st.title("Pair Trading Reinforcement Learning UI")
     st.caption("Configure NLP, Heston, and RL pipelines, run them, and monitor logs.")
+    st.info(
+        "Bienvenue ! Cette interface vous guide pour enchainer trois briques : "
+        "1) extraire un sentiment Telegram/LLM (NLP), 2) calibrer Heston et produire des features, "
+        "3) lancer un entrainement RL (bandit contextuel) sur des prix synthetiques. "
+        "Passez sur chaque onglet pour regler les hyperparametres, puis declenchez le pipeline depuis la sidebar."
+    )
     if not TF_OK:
         st.warning(f"TensorFlow non installe dans cet environnement ({TF_IMPORT_ERROR}). "
                    "L'onglet RL fonctionnera uniquement après installation (pip install tensorflow==2.10.1).")
@@ -281,14 +287,24 @@ def main() -> None:
         st.header("Controls")
         selected_module = st.selectbox("Focus config tab", options=["nlp", "heston", "rl"], format_func=str.upper)
         run_mode = st.radio("Execution mode", options=["dry-run", "real-run"], index=0)
+        st.write(
+            "- **dry-run** : utilise des donnees/valeurs factices pour aller vite.\n"
+            "- **real-run** : lance les modules reels (verifiez vos tokens/chemins et la dispo GPU)."
+        )
         if st.button("Run pipeline"):
             st.session_state["last_run"] = run_pipeline(run_mode)
             st.success(f"Pipeline launched in {run_mode} mode.")
+            st.toast("Pipeline en cours : surveillez les logs.")
 
     tabs = st.tabs(["Configuration", "Execution Logs"])
     with tabs[0]:
+        st.markdown(
+            "Choisissez un onglet pour regler la configuration de chaque module. "
+            "Les boutons **Save config** ecrivent les fichiers YAML dans `CONFIG/`."
+        )
         _config_tabs(default_tab=selected_module)
     with tabs[1]:
+        st.markdown("Suivez l'avancement ou les erreurs dans les logs. Activez l'auto-refresh pour un suivi en direct.")
         logs_page.render()
 
     if st.session_state.get("last_run"):

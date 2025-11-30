@@ -32,6 +32,16 @@ def _parse_float_list(raw: str) -> List[float]:
 def render() -> None:
     """Render Heston config form."""
     st.subheader("Heston configuration")
+    with st.expander("Guide des champs (Heston)", expanded=False):
+        st.markdown(
+            "- **Enable Heston module** : active ou saute totalement le calcul de features Heston.\n"
+            "- **CSV path** : fichier d'options vanille (S0, K, T, C_mkt) pour calibrer le modele.\n"
+            "- **Rolling window size** : nombre de lignes considerees par fenetre pour les stats/calibration.\n"
+            "- **Maturities / Strikes** : grilles d'echeances et strikes lues dans le CSV ou imposees pour la calibration.\n"
+            "- **Normalization** : choix du pre-traitement des features (minmax, standard ou aucun).\n"
+            "- **Pricer parameters** : hyperparametres du solveur (iters, lr, taux r/q, device CPU/CUDA).\n"
+            "- **Output CSV path** : destination des features Heston exportees pour la suite."
+        )
     cfg = load_config("heston")
     pricer_cfg = cfg.get("pricer", {}) or {}
 

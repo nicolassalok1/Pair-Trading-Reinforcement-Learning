@@ -17,6 +17,17 @@ from streamlit_app.utils.config_loader import load_config, save_config  # noqa: 
 def render() -> None:
     """Render NLP config form."""
     st.subheader("NLP configuration")
+    with st.expander("Guide des champs (NLP)", expanded=False):
+        st.markdown(
+            "- **Enable NLP module** : active ou coupe toute la brique NLP.\n"
+            "- **OpenAI API key / model** : identifiants pour generer du sentiment via GPT.\n"
+            "- **Telegram bot token / channel ID** : recuperation des messages Telegram a scorer.\n"
+            "- **Sentiment threshold** : met a zero les signaux trop faibles (|score| < seuil).\n"
+            "- **Normalize sentiment features** : recentre et normalise les 4 features avant export.\n"
+            "- **Mock GPT / Mock Telegram** : evite tout appel reseau et renvoie des valeurs factices.\n"
+            "- **Output CSV path** : ou ecrire le fichier de features pour les etapes suivantes."
+        )
+    st.caption("Renseignez vos cles si vous voulez interroger Telegram + GPT en mode real-run. En dry-run, des valeurs factices sont generees.")
     cfg = load_config("nlp")
 
     with st.form(key="nlp_config_form"):

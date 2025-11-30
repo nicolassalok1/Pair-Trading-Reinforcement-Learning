@@ -17,6 +17,17 @@ from streamlit_app.utils.config_loader import load_config, save_config  # noqa: 
 def render() -> None:
     """Render RL config form."""
     st.subheader("RL configuration")
+    with st.expander("Guide des champs (RL)", expanded=False):
+        st.markdown(
+            "- **Learning rate / Batch size** : pas de descente de gradient et taille des minibatchs.\n"
+            "- **Gamma (discount)** : importance donnee aux recompenses futures.\n"
+            "- **Number of episodes** : iterations d'entrainement du bandit contextuel.\n"
+            "- **Exploration rate** : proportion d'actions prises au hasard (epsilon-greedy ou boltzmann).\n"
+            "- **Policy** : strategie d'exploration (epsilon_greedy ou boltzmann).\n"
+            "- **Device** : execution CPU ou GPU pour le calcul.\n"
+            "- **Use Heston / Use NLP** : injecte ou non les features des autres modules.\n"
+            "- **Dry-run** : saute l'entrainement lourd et renvoie un resultat de test."
+        )
     cfg = load_config("rl")
 
     with st.form(key="rl_config_form"):

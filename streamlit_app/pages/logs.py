@@ -24,7 +24,7 @@ def _maybe_autorefresh(key: str, enabled: bool, interval_sec: int) -> None:
     last = st.session_state.get(key, 0)
     if now - last >= interval_sec:
         st.session_state[key] = now
-        st.experimental_rerun()
+        st.rerun()
 
 
 def _render_lines(lines: List[str]) -> str:
@@ -52,7 +52,7 @@ def render_module_logs(module_name: str, auto_refresh: bool, refresh_sec: int, t
         if st.button(f"Clear {module_name} log", key=f"clear_{module_name}"):
             clear_log(module_name)
             st.success("Log cleared.")
-            st.experimental_rerun()
+            st.rerun()
     with col2:
         st.caption(f"Showing last {tail} lines from {module_name}.log")
 

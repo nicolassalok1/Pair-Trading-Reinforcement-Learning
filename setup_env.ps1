@@ -48,3 +48,6 @@ Ensure-Conda
 Create-Or-Update-Env -name $EnvName
 Activate-Env -name $EnvName
 Run-Verification
+Activate-Env -name $EnvName
+Write-Host "Updating conda (base) from defaults..." -ForegroundColor Cyan
+conda update -n base -c defaults conda -y

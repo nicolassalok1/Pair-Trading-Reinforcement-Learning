@@ -7,6 +7,7 @@ dependencies:
   - pip
   - numpy<2
   - pandas
+  - statsmodels
   - scipy
   - scikit-learn
   - matplotlib
@@ -24,6 +25,7 @@ dependencies:
       - gymnasium[classic-control]
       - stable-baselines3
       - tensorboard
+      - tensorflow==2.10.1
       - pygame
       - cloudpickle
       - pyyaml

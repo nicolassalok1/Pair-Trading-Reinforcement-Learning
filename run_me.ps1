@@ -44,8 +44,16 @@ except ImportError as exc:
     }
 }
 
+function Ensure-Protobuf {
+    # Streamlit >=1.50 exige protobuf >=3.20 ; TensorFlow 2.10 prefere <3.20.
+    # On force une version 3.20.x qui marche avec les deux dans la pratique.
+    Write-Host "Ajustement de protobuf (3.20.x) pour compatibilite Streamlit/TensorFlow..." -ForegroundColor Yellow
+    conda run -n $EnvName pip install protobuf==3.20.3 | Write-Output
+}
+
 function Launch-Streamlit {
     Write-Host "Lancement de Streamlit..." -ForegroundColor Green
+    $env:PROTOCOL_BUFFERS_PYTHON_IMPLEMENTATION = "python"
     conda run -n $EnvName python -m streamlit run "streamlit_app/app.py"
 }
 
@@ -53,4 +61,5 @@ function Launch-Streamlit {
 Ensure-Conda
 Activate-Env -name $EnvName
 Ensure-Streamlit
+Ensure-Protobuf
 Launch-Streamlit

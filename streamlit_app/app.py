@@ -10,7 +10,16 @@ from typing import Dict, Tuple
 import numpy as np
 import pandas as pd
 import streamlit as st
-import tensorflow.compat.v1 as tf
+try:  # TensorFlow is optional for UI startup; RL stage will fail gracefully if missing.
+    import tensorflow.compat.v1 as tf
+
+    tf.disable_v2_behavior()
+    tf.get_logger().setLevel("ERROR")
+    TF_OK = True
+except ImportError as exc:  # pragma: no cover - import guard
+    tf = None
+    TF_OK = False
+    TF_IMPORT_ERROR = exc
 
 ROOT = Path(__file__).resolve().parent
 REPO_ROOT = ROOT.parent
@@ -26,9 +35,6 @@ from STRATEGY.Cointegration import EGCointegration  # noqa: E402
 from UTIL import FileIO  # noqa: E402
 from nlp_module import sentiment_processor  # noqa: E402
 from heston_model.calibrate_heston import get_heston_features_from_csv  # noqa: E402
-
-tf.disable_v2_behavior()
-tf.get_logger().setLevel("ERROR")
 
 STYLE_PATH = ROOT / "utils" / "style.css"
 
@@ -158,6 +164,8 @@ def run_heston(cfg: Dict, mode: str) -> Dict:
 
 
 def _build_network(n_state: int, n_action: int) -> Basics.Network:
+    if not TF_OK:
+        raise ImportError(f"TensorFlow missing: {TF_IMPORT_ERROR}")
     tf.reset_default_graph()
     state_in = tf.placeholder(shape=[1], dtype=tf.int32)
     network = Basics.Network(state_in)
@@ -186,6 +194,10 @@ def _build_network(n_state: int, n_action: int) -> Basics.Network:
 def run_rl(cfg: Dict, mode: str, nlp_out: Dict | None = None, heston_out: Dict | None = None) -> Dict:
     """Run a lightweight RL training loop."""
     append_log("rl", f"Starting RL stage (mode={mode})")
+    if not TF_OK:
+        msg = f"TensorFlow not installed: {TF_IMPORT_ERROR}"
+        append_log("rl", f"ERROR: {msg}")
+        return {"status": "error", "error": msg}
     if cfg.get("dry_run") or mode == "dry-run":
         append_log("rl", "Dry-run enabled; skipping heavy training.")
         return {"status": "dry-run"}
@@ -261,6 +273,9 @@ def main() -> None:
     load_css()
     st.title("Pair Trading Reinforcement Learning UI")
     st.caption("Configure NLP, Heston, and RL pipelines, run them, and monitor logs.")
+    if not TF_OK:
+        st.warning(f"TensorFlow non installe dans cet environnement ({TF_IMPORT_ERROR}). "
+                   "L'onglet RL fonctionnera uniquement après installation (pip install tensorflow==2.10.1).")
 
     with st.sidebar:
         st.header("Controls")
